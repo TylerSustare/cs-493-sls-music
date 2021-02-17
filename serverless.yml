@@ -1,0 +1,31 @@
+service: music-api
+
+frameworkVersion: '2'
+
+provider:
+  name: aws
+  runtime: nodejs12.x
+  lambdaHashingVersion: 20201221
+
+plugins:
+  - serverless-offline
+  - serverless-express 
+
+functions:
+  auth:
+    handler: auth.handler
+
+  hello:
+    handler: handler.api
+    events:
+      # - httpApi: # 
+          # path: /ex
+          # method: get
+      - http:
+          method: ANY   
+          path: /{proxy+}
+          cors: true
+          authorizer:
+            name: auth
+            type: request
+            identitySource: method.request.header.authorization
